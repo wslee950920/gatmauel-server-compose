@@ -1,0 +1,53 @@
+version: '3'
+
+services:
+  proxy-server:
+    container_name: gatmauelProxy
+    image: 772388794309.dkr.ecr.ap-northeast-2.amazonaws.com/gatmauel/proxy-server:0.927
+    networks:
+      - gatmauel
+    depends_on:
+      - user-api
+      - admin-api
+      - user-front
+    ports:
+      - "80:80"
+    volumes:
+      - gatmauel:/gatmauel/user-front/build/static
+
+  user-front:
+    container_name: gatmauelUserFront
+    image: 772388794309.dkr.ecr.ap-northeast-2.amazonaws.com/gatmauel/user-front:0.972
+    env_file:
+      - ./user-front/.env
+    networks:
+      - gatmauel
+    depends_on:
+      - user-api
+      - admin-api
+    volumes:
+      - gatmauel:/gatmauel/user-front/build/static
+
+  user-api:
+    container_name: gatmauelUserAPI
+    image: 772388794309.dkr.ecr.ap-northeast-2.amazonaws.com/gatmauel/user-api:0.939
+    env_file:
+      - ./user-api/.env
+    networks:
+      - gatmauel
+    depends_on:
+      - admin-api
+
+  admin-api:
+    container_name: gatmauelAdminAPI
+    image: 772388794309.dkr.ecr.ap-northeast-2.amazonaws.com/gatmauel/admin-api:0.943
+    env_file:
+      - ./admin-api/.env
+    networks:
+      - gatmauel
+
+networks:
+  gatmauel:
+    driver: bridge
+volumes:
+  gatmauel:
